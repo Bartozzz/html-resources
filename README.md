@@ -10,13 +10,10 @@ $ npm install html-resources
 
 ## Usage
 
-You can load `html-resources` like a typical node module:
+`getResources( file, options);`
 
 ```javascript
 // Import stuff:
-var getResources = require( "html-resources" ).getResources;
-var Resources    = require( "html-resources" ).Resources;
-// or...
 import { getResources, Resources } from "html-resources";
 
 // ... and let the magic happen:
@@ -35,31 +32,33 @@ const assets = getResources( "./path/to/file.html", {
 ```javascript
 import { getResources } from "html-resources";
 
-const assets = getResources( "./path/to/file.html" );
+const assets = getResources( "./path/to/file.html", {
+    cwd : __dirname
+} );
 
-assets.on( "item", ( type, resource ) => {
+assets.on( "item", ( type, resource, stream ) => {
     console.log( `${type} found`, resource );
 } );
 
-assets.on( "link", resource => {
+assets.on( "link", ( resource, stream ) => {
     console.log( "Stylesheet found", resource );
 } );
 
-assets.on( "script", resource => {
+assets.on( "script", ( resource, stream ) => {
     console.log( "Script found", resource );
 } );
 
-assets.on( "img", resource => {
+assets.on( "img", ( resource, stream ) => {
     console.log( "Image found", resource );
 } );
 
 assets.on( "error", message => console.log( "Error", message ) );
-assets.on( "end", resources => console.log( "End" ) );
+assets.on( "end", resources => console.log( `Found ${resources.length} resources` ) );
 ```
 
-### Adding new resources
+### Adding new resources definitions
 
-You can specify which resources you want to parse in the `resources` parameter by passing an object with two properties: `tag` and `attr`. By default, it will look for `Resources.Scripts`, `Resources.Styles`, `Resources.Images`.
+You can specify which resources you want to parse in the `resources` parameter by passing an object with two properties: `tag` and `attr`. By default, it will look for `Resources.Scripts` (<script src="…"></script>), `Resources.Styles` (<link href="…" />), `Resources.Images` (<img src="…" />).
 
 ```javascript
 import { getResources, Resources } from "html-resources";
@@ -67,14 +66,22 @@ import { getResources, Resources } from "html-resources";
 const assets = getResources( "./path/to/file.html", {
     // Search <scripts> and <custom-tag>
     resources : [
-        // <script src="path/to/file"></script>
-        Resources.Scripts,
+        // <img />, <link />, <script />
+        ...Resources,
+
         // <custom-tag path="path/to/file" />
-        { tag  : "custom-tag", attr : "path" }
+        { tag : "custom-tag", attr : "path" },
+
+        // <shadow-item custom="path/to/file" />
+        { tag : "shadow-item", attr : "custom" }
     ]
 } );
 
-assets.on( "custom-tag", resource => {
+assets.on( "custom-tag", ( resource, stream ) => {
+    console.log( resource )
+} );
+
+assets.on( "shadow-item", ( resource, stream ) => {
     console.log( resource )
 } );
 ```
@@ -86,7 +93,9 @@ You can use `html-resources` to find, modify and re-save resources in a simple w
 ```javascript
 import { getResources } from "html-resources";
 
-const assets = getResources( "./path/to/file.html" );
+const assets = getResources( "./path/to/file.html", {
+    cwd : __dirname
+} );
 
 assets.on( "script", ( resource, stream ) => {
     console.log( "Saving script", resource.name );
@@ -94,28 +103,11 @@ assets.on( "script", ( resource, stream ) => {
     const dist  = path.resolve( "path/to/output/", resource.base );
     const write = fs.createWriteStream( dist, { flags : "w" } );
 
-    // You can use browserify, babel and other stuff here...
+    // You can use browserify, babelify and use other transformations here…
 
     stream.pipe( write );
 } );
 ```
-
-## Options
-
-```javascript
-const assets = getResources( "./file.html", {
-    cwd       : "current/working/directory"
-    resources : [ /* ... */ ]
-} );
-```
-
-#### cwd
-
-Current working directory. All the paths will be resolved to `cwd`. By default, it's set to `process.cwd()`.
-
-#### resources
-
-An array containing all the resources definitions `html-resources` should look for. By default, it's set to `Resources.Scripts`, `Resources.Styles`, `Resources.Images`.
 
 ## Resources definitions
 
@@ -128,7 +120,23 @@ You can add your own resources definitions. It's a simple object containing righ
 }
 ```
 
-Resources definitions might be more complex in next updates.
+## Options
+
+```javascript
+const assets = getResources( file [, options] );
+```
+
+#### file
+
+File to parse.
+
+#### options.cwd
+
+Current working directory. All the paths will be resolved to `cwd`. By default, it's set to `process.cwd()` but in most cases you want to set it manually to `__dirname`.
+
+#### options.resources
+
+An array containing all the resources definitions `html-resources` should look for. By default, it's set to `Resources.Scripts`, `Resources.Styles`, `Resources.Images`.
 
 ## Tests
 
