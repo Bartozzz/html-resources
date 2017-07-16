@@ -1,7 +1,7 @@
-import fs       from "fs";
-import path     from "path";
-import mixin    from "merge-descriptors";
-import cheerio  from "cheerio";
+import fs      from "fs";
+import path    from "path";
+import mixin   from "merge-descriptors";
+import cheerio from "cheerio";
 
 export default {
     getContent( file ) {
@@ -17,10 +17,10 @@ export default {
         const $     = cheerio.load( html );
         const elems = [];
 
-        for ( let resource of this.opts.resources ) {
+        for ( const resource of this.opts.resources ) {
             $( resource.tag ).each( ( index, element ) => {
-                let $resource  = $( element );
-                let fileSource = $resource.attr( resource.attr );
+                const $resource  = $( element );
+                const fileSource = $resource.attr( resource.attr );
 
                 elems.push( {
                     type : resource.tag,
@@ -35,12 +35,15 @@ export default {
     prepareResource( type, source, raw ) {
         fs.readFile( source, "utf8", ( error, data ) => {
             if ( error ) {
-                return this.emit( "error", error.message );
+                this.emit( "error", error.message );
+                return;
             }
 
-            let stream = fs.createReadStream( source, { encoding : "utf8" } );
+            const stream = fs.createReadStream( source, {
+                encoding : "utf8"
+            } );
 
-            mixin( raw, { data : data, self : raw } );
+            mixin( raw, { data, self : raw } );
             mixin( raw, path.parse( source ) );
 
             this.emit( type, raw, stream );
@@ -49,16 +52,16 @@ export default {
     },
 
     search() {
-        let html  = this.getContent( this.main );
-        let links = this.getResources( html );
-        let count = links.length;
+        const html  = this.getContent( this.main );
+        const files = this.getResources( html );
+        let count = files.length;
 
         this.on( "item", () => {
-            if ( --count === 0 ) this.emit( "end", links )
+            if ( --count === 0 ) this.emit( "end", files );
         } );
 
-        for ( let link of links ) {
-            this.prepareResource( link.type, link.path, link );
+        for ( let file of files ) {
+            this.prepareResource( file.type, file.path, file );
         }
 
         return this;
