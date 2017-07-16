@@ -58,7 +58,7 @@ assets.on( "end", resources => console.log( `Found ${resources.length} resources
 
 ### Adding new resources definitions
 
-You can specify which resources you want to parse in the `resources` parameter by passing an object with two properties: `tag` and `attr`. By default, it will look for `Resources.Scripts` (<script src="…"></script>), `Resources.Styles` (<link href="…" />), `Resources.Images` (<img src="…" />).
+You can specify which resources you want to parse in the `resources` parameter by passing an object with two properties: `tag` and `attr`. By default, it will look for `Resources.Scripts` (`<script src="…"></script>`), `Resources.Styles` (`<link href="…" />`), `Resources.Images` (`<img src="…" />`).
 
 ```javascript
 import { getResources, Resources } from "html-resources";
@@ -128,7 +128,7 @@ const assets = getResources( file [, options] );
 
 #### file
 
-File to parse.
+HTML file to parse.
 
 #### options.cwd
 
