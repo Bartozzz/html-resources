@@ -20,5 +20,5 @@ install:
   - npm install
 
 script:
-  - npm run preapre
+  - npm run prepare
   - npm run test
