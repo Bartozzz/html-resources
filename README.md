@@ -1,5 +1,7 @@
 # html-resources
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/Bartozzz/html-resources.svg)](https://greenkeeper.io/)
+
 Parse `.html` files for custom resources. `html-resources` finds any resources loaded by a website for you and emits an event with all the data needed.
 
 ## Installation
