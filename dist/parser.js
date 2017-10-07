@@ -26,7 +26,7 @@ exports.default = {
     getContent: function getContent(file) {
         if (!_fs2.default.existsSync(file)) {
             this.emit("error", "File " + file + " does not exist");
-            return;
+            return null;
         }
 
         return _fs2.default.readFileSync(file, { encoding: "utf8" });

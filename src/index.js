@@ -1,13 +1,14 @@
+// @flow
+
 import path from "path";
 import mixin from "merge-descriptors";
-import {EventEmitter} from "events";
+import EventEmitter from "events";
 import HtmlParser from "./parser";
 
 /**
  * Default resources.
  *
  * @type    {object}
- * @access  public
  */
 export const Resources = {
     Scripts: require("./resources/scripts"),
@@ -24,9 +25,8 @@ export const Resources = {
  * @param   {array}     opts.resources  Resources to parse the HTML file for
  *
  * @return  {object}
- * @access  public
  */
-export const getResources = (file, opts = {}) => {
+export function getResources(file: string, opts: Object = {}): Object {
     if (path.extname(file) !== ".html") {
         throw new Error(
             `You must provide an .html file, not ${path.extname(file)}`
@@ -52,5 +52,6 @@ export const getResources = (file, opts = {}) => {
     mixin(parser, EventEmitter.prototype, false);
     mixin(parser, HtmlParser, false);
 
+    // $FlowFixMe
     return parser.search();
-};
+}

@@ -26,9 +26,11 @@
         "cheerio": "^1.0.0-rc.2"
     },
     "devDependencies": {
+        "flow-bin": "^0.56.0",
         "mocha": "^4.0.0",
         "babel-cli": "^6.26.0",
         "babel-eslint": "^8.0.1",
+        "babel-preset-flow": "^6.23.0",
         "babel-preset-es2015": "^6.24.1",
         "babel-plugin-add-module-exports": "^0.2.1",
         "eslint": "^4.8.0",
@@ -37,11 +39,12 @@
         "eslint-plugin-import": "^2.7.0"
     },
     "scripts": {
+        "flow": "flow",
         "test": "mocha --harmony",
         "clean": "rm -rf dist",
         "build": "babel src -d dist",
         "watch": "babel src -d dist -w",
         "eslint": "node_modules/.bin/eslint --fix src test",
-        "prepare": "npm run clean && npm run eslint && npm run build"
+        "prepare": "npm run clean && npm run eslint && npm run flow && npm run build"
     }
 }

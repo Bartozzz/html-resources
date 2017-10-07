@@ -1,26 +1,28 @@
+// @flow
+
 import fs from "fs";
 import path from "path";
 import mixin from "merge-descriptors";
 import cheerio from "cheerio";
 
 export default {
-    getContent(file) {
-        if (! fs.existsSync(file)) {
+    getContent(file: string): null|string {
+        if (!fs.existsSync(file)) {
             this.emit("error", `File ${file} does not exist`);
-            return;
+            return null;
         }
 
         return fs.readFileSync(file, {encoding: "utf8"});
     },
 
-    getResources(html) {
+    getResources(html: string): Array<Object> {
         const $ = cheerio.load(html);
         const elems = [];
 
         for (const resource of this.opts.resources) {
             $(resource.tag).each((index, element) => {
-                const $resource = $(element);
-                const fileSource = $resource.attr(resource.attr);
+                const $resource: Object = $(element);
+                const fileSource: string = $resource.attr(resource.attr);
 
                 elems.push({
                     type: resource.tag,
@@ -32,14 +34,14 @@ export default {
         return elems;
     },
 
-    prepareResource(type, source, raw) {
+    prepareResource(type: string, source: string, raw: string): void {
         fs.readFile(source, "utf8", (error, data) => {
             if (error) {
                 this.emit("error", error.message);
                 return;
             }
 
-            const stream = fs.createReadStream(source, {
+            const stream: fs.ReadStream = fs.createReadStream(source, {
                 encoding: "utf8",
             });
 
@@ -51,10 +53,10 @@ export default {
         });
     },
 
-    search() {
-        const html = this.getContent(this.main);
-        const files = this.getResources(html);
-        let count = files.length;
+    search(): Object {
+        const html: string = this.getContent(this.main);
+        const files: Array<Object> = this.getResources(html);
+        let count: number = files.length;
 
         this.on("item", () => {
             if (--count === 0) this.emit("end", files);
