@@ -4,10 +4,6 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _getIterator2 = require("babel-runtime/core-js/get-iterator");
-
-var _getIterator3 = _interopRequireDefault(_getIterator2);
-
 var _fs = require("fs");
 
 var _fs2 = _interopRequireDefault(_fs);
@@ -60,7 +56,7 @@ exports.default = {
                 });
             };
 
-            for (var _iterator = (0, _getIterator3.default)(this.opts.resources), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            for (var _iterator = this.opts.resources[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                 _loop();
             }
         } catch (err) {
@@ -116,7 +112,7 @@ exports.default = {
         var _iteratorError2 = undefined;
 
         try {
-            for (var _iterator2 = (0, _getIterator3.default)(files), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            for (var _iterator2 = files[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                 var file = _step2.value;
 
                 this.prepareResource(file.type, file.path, file);
