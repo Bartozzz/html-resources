@@ -1,4 +1,4 @@
 export default {
-    tag  : "script",
-    attr : "src"
+    tag: "script",
+    attr: "src",
 };

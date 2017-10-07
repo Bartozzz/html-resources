@@ -1,4 +1,4 @@
 export default {
-    tag  : "img",
-    attr : "src"
+    tag: "img",
+    attr: "src",
 };

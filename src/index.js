@@ -1,7 +1,7 @@
-import path             from "path";
-import mixin            from "merge-descriptors";
-import { EventEmitter } from "events";
-import HtmlParser       from "./parser";
+import path from "path";
+import mixin from "merge-descriptors";
+import {EventEmitter} from "events";
+import HtmlParser from "./parser";
 
 /**
  * Default resources.
@@ -10,9 +10,9 @@ import HtmlParser       from "./parser";
  * @access  public
  */
 export const Resources = {
-    Scripts : require( "./resources/scripts" ),
-    Styles  : require( "./resources/styles" ),
-    Images  : require( "./resources/images" )
+    Scripts: require("./resources/scripts"),
+    Styles: require("./resources/styles"),
+    Images: require("./resources/images"),
 };
 
 /**
@@ -26,22 +26,31 @@ export const Resources = {
  * @return  {object}
  * @access  public
  */
-export const getResources = ( file, opts = {} ) => {
-    if ( path.extname( file ) !== ".html" )
-        throw new Error( `You must provide an .html file, not ${path.extname( file )}` );
+export const getResources = (file, opts = {}) => {
+    if (path.extname(file) !== ".html") {
+        throw new Error(
+            `You must provide an .html file, not ${path.extname(file)}`
+        );
+    }
 
-    if ( ! opts.resources )
-        opts.resources = [ Resources.Scripts, Resources.Styles, Resources.Images ];
+    if (! opts.resources) {
+        opts.resources = [
+            Resources.Scripts,
+            Resources.Styles,
+            Resources.Images,
+        ];
+    }
 
-    if ( ! opts.cwd )
+    if (! opts.cwd) {
         opts.cwd = process.cwd();
+    }
 
-    const main   = path.resolve( opts.cwd, file );
-    const base   = path.parse( main ).dir;
-    const parser = { file, base, main, opts };
+    const main = path.resolve(opts.cwd, file);
+    const base = path.parse(main).dir;
+    const parser = {file, base, main, opts};
 
-    mixin( parser, EventEmitter.prototype, false );
-    mixin( parser, HtmlParser, false );
+    mixin(parser, EventEmitter.prototype, false);
+    mixin(parser, HtmlParser, false);
 
     return parser.search();
 };
