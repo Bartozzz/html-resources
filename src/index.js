@@ -28,9 +28,7 @@ export const Resources = {
  */
 export function getResources(file: string, opts: Object = {}): Object {
   if (path.extname(file) !== ".html") {
-    throw new Error(
-      `You must provide an .html file, not ${path.extname(file)}`
-    );
+    throw new Error(`You must provide a .html file, not ${path.extname(file)}`);
   }
 
   if (!opts.resources) {
