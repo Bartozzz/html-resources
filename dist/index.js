@@ -1,7 +1,7 @@
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 exports.Resources = undefined;
 exports.getResources = getResources;
@@ -30,9 +30,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @type    {object}
  */
 var Resources = exports.Resources = {
-    Scripts: require("./resources/scripts"),
-    Styles: require("./resources/styles"),
-    Images: require("./resources/images")
+  Scripts: require("./resources/scripts"),
+  Styles: require("./resources/styles"),
+  Images: require("./resources/images")
 };
 
 /**
@@ -46,27 +46,27 @@ var Resources = exports.Resources = {
  * @return  {object}
  */
 function getResources(file) {
-    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-    if (_path2.default.extname(file) !== ".html") {
-        throw new Error("You must provide an .html file, not " + _path2.default.extname(file));
-    }
+  if (_path2.default.extname(file) !== ".html") {
+    throw new Error("You must provide an .html file, not " + _path2.default.extname(file));
+  }
 
-    if (!opts.resources) {
-        opts.resources = [Resources.Scripts, Resources.Styles, Resources.Images];
-    }
+  if (!opts.resources) {
+    opts.resources = [Resources.Scripts, Resources.Styles, Resources.Images];
+  }
 
-    if (!opts.cwd) {
-        opts.cwd = process.cwd();
-    }
+  if (!opts.cwd) {
+    opts.cwd = process.cwd();
+  }
 
-    var main = _path2.default.resolve(opts.cwd, file);
-    var base = _path2.default.parse(main).dir;
-    var parser = { file: file, base: base, main: main, opts: opts };
+  var main = _path2.default.resolve(opts.cwd, file);
+  var base = _path2.default.parse(main).dir;
+  var parser = { file: file, base: base, main: main, opts: opts };
 
-    (0, _mergeDescriptors2.default)(parser, _events2.default.prototype, false);
-    (0, _mergeDescriptors2.default)(parser, _parser2.default, false);
+  (0, _mergeDescriptors2.default)(parser, _events2.default.prototype, false);
+  (0, _mergeDescriptors2.default)(parser, _parser2.default, false);
 
-    // $FlowFixMe
-    return parser.search();
+  // $FlowFixMe
+  return parser.search();
 }

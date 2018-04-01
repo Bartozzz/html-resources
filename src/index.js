@@ -11,9 +11,9 @@ import HtmlParser from "./parser";
  * @type    {object}
  */
 export const Resources = {
-    Scripts: require("./resources/scripts"),
-    Styles: require("./resources/styles"),
-    Images: require("./resources/images"),
+  Scripts: require("./resources/scripts"),
+  Styles: require("./resources/styles"),
+  Images: require("./resources/images")
 };
 
 /**
@@ -27,31 +27,27 @@ export const Resources = {
  * @return  {object}
  */
 export function getResources(file: string, opts: Object = {}): Object {
-    if (path.extname(file) !== ".html") {
-        throw new Error(
-            `You must provide an .html file, not ${path.extname(file)}`
-        );
-    }
+  if (path.extname(file) !== ".html") {
+    throw new Error(
+      `You must provide an .html file, not ${path.extname(file)}`
+    );
+  }
 
-    if (! opts.resources) {
-        opts.resources = [
-            Resources.Scripts,
-            Resources.Styles,
-            Resources.Images,
-        ];
-    }
+  if (!opts.resources) {
+    opts.resources = [Resources.Scripts, Resources.Styles, Resources.Images];
+  }
 
-    if (! opts.cwd) {
-        opts.cwd = process.cwd();
-    }
+  if (!opts.cwd) {
+    opts.cwd = process.cwd();
+  }
 
-    const main = path.resolve(opts.cwd, file);
-    const base = path.parse(main).dir;
-    const parser = {file, base, main, opts};
+  const main = path.resolve(opts.cwd, file);
+  const base = path.parse(main).dir;
+  const parser = { file, base, main, opts };
 
-    mixin(parser, EventEmitter.prototype, false);
-    mixin(parser, HtmlParser, false);
+  mixin(parser, EventEmitter.prototype, false);
+  mixin(parser, HtmlParser, false);
 
-    // $FlowFixMe
-    return parser.search();
+  // $FlowFixMe
+  return parser.search();
 }

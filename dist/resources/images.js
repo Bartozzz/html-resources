@@ -1,10 +1,10 @@
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 exports.default = {
-    tag: "img",
-    attr: "src"
+  tag: "img",
+  attr: "src"
 };
 module.exports = exports["default"];
