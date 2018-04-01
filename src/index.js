@@ -1,15 +1,9 @@
 // @flow
-
-import path from "path";
+import path, { extname } from "path";
 import mixin from "merge-descriptors";
 import EventEmitter from "events";
 import HtmlParser from "./parser";
 
-/**
- * Default resources.
- *
- * @type    {object}
- */
 export const Resources = {
   Scripts: require("./resources/scripts"),
   Styles: require("./resources/styles"),
@@ -19,32 +13,31 @@ export const Resources = {
 /**
  * Glues all components together.
  *
- * @param   {string}    file            HTML to get resources from
- * @param   {object}    opts            Custom options
- * @param   {string}    opts.cwd        Current working directory
- * @param   {array}     opts.resources  Resources to parse the HTML file for
+ * @param   {string}    file              HTML to get resources from
+ * @param   {object}    options           Custom options
+ * @param   {string}    options.cwd       Current working directory
+ * @param   {array}     options.resources Resources to parse the HTML file for
  *
  * @return  {object}
  */
-export function getResources(file: string, opts: Object = {}): Object {
-  if (path.extname(file) !== ".html") {
-    throw new Error(`You must provide a .html file, not ${path.extname(file)}`);
+export function getResources(file: string, options: Object = {}): Object {
+  if (extname(file) !== ".html") {
+    throw new Error(`You must provide a .html file, not ${extname(file)}`);
   }
 
-  if (!opts.resources) {
-    opts.resources = [Resources.Scripts, Resources.Styles, Resources.Images];
-  }
-
-  if (!opts.cwd) {
-    opts.cwd = process.cwd();
-  }
+  const opts = {
+    resources: [Resources.Scripts, Resources.Styles, Resources.Images],
+    cwd: process.cwd(),
+    ...options
+  };
 
   const main = path.resolve(opts.cwd, file);
   const base = path.parse(main).dir;
   const parser = { file, base, main, opts };
 
-  mixin(parser, EventEmitter.prototype, false);
+  // Glues all the components together:
   mixin(parser, HtmlParser, false);
+  mixin(parser, EventEmitter.prototype, false);
 
   // $FlowFixMe
   return parser;
