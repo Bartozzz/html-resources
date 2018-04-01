@@ -10,8 +10,10 @@
     "stylesheets",
     "images"
   ],
-  "description": "Parses HTML files and extracts custom resources (scripts, stylesheets, images, …)",
-  "author": "Łaniewski Bartosz <laniewski.bartozzz@gmail.com> (http://laniewski.me/)",
+  "description":
+    "Parses HTML files and extracts custom resources (scripts, stylesheets, images, …)",
+  "author":
+    "Łaniewski Bartosz <laniewski.bartozzz@gmail.com> (http://laniewski.me/)",
   "license": "MIT",
   "main": "dist/index.js",
   "repository": {
@@ -47,12 +49,13 @@
     "prettier": "^1.11.1"
   },
   "scripts": {
-    "flow": "flow",
-    "test": "mocha --harmony",
+    "test": "npm run test:eslint && npm run test:flow && npm run test:mocha",
+    "test:flow": "flow",
+    "test:mocha": "mocha --require babel-core/register",
+    "test:eslint": "eslint --fix src",
     "clean": "rm -rf dist",
     "build": "babel src -d dist",
     "watch": "babel src -d dist -w",
-    "eslint": "node_modules/.bin/eslint --fix src test",
-    "prepare": "npm run clean && npm run eslint && npm run flow && npm run build"
+    "prepare": "npm run clean && npm run test && npm run build"
   }
 }

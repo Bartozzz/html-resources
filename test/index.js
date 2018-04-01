@@ -1,26 +1,32 @@
-const {getResources} = require("../dist");
+import chai  from "chai";
+import {getResources} from "../src/";
 
-const assets = getResources("./resources/index.html", {
-    cwd: __dirname,
-});
+describe("html-resources", function () {
+  const expect = chai.expect;
 
-assets.on("img", (resource) => {
-    console.log("Image:", resource.name);
-});
+  describe("getResources(file)", function () {
+    it("should find resources", function (done) {
+      let assets = getResources("./resources/index.html", { cwd: __dirname });
+      let count = 0;
 
-assets.on("link", (resource) => {
-    console.log("Style:", resource.name);
-});
+      assets.on("img", (resource) => {
+        count++;
+      });
 
-assets.on("script", (resource) => {
-    console.log("Script:", resource.base);
-});
+      assets.on("link", (resource) => {
+        count++;
+      });
 
-assets.on("error", (message) => {
-    console.log("Error", message);
-});
+      assets.on("script", (resource) => {
+        count++;
+      });
 
-assets.on("end", (resources) => {
-    console.log("------------------");
-    console.log(`${resources.length} resources found!`);
+      assets.on("end", (resources) => {
+        expect(count).to.equal(5);
+        done();
+      });
+
+      assets.search();
+    });
+  });
 });
