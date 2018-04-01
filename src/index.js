@@ -47,5 +47,5 @@ export function getResources(file: string, opts: Object = {}): Object {
   mixin(parser, HtmlParser, false);
 
   // $FlowFixMe
-  return parser.search();
+  return parser;
 }
