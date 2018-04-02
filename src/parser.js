@@ -7,11 +7,16 @@ import cheerio from "cheerio";
 import resources from "./resources";
 
 /**
- * @requires  mixin
+ * Parses HTML files and extracts custom resources such as scripts, stylesheets,
+ * images and user-defined elements. Supports both Event-based and Promise-based
+ * syntax.
+ *
+ * @requires  merge-descriptors
  * @requires  cheerio
+ * @class
  */
 export default class Parser extends EventEmitter {
-  // Absolute pth to the main file
+  // Absolute path to the main file
   main: string;
   // Absolute path to the main directory
   base: string;
@@ -118,6 +123,9 @@ export default class Parser extends EventEmitter {
   }
 
   /**
+   * Loads and parses the given HTML file. Emits an event on each resource
+   * found.
+   *
    * @return  {this}
    * @access  public
    */
