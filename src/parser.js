@@ -1,40 +1,86 @@
 // @flow
-
 import fs from "fs";
 import path from "path";
 import mixin from "merge-descriptors";
 import cheerio from "cheerio";
+import EventEmitter from "events";
 
-export default {
-  getContent(file: string): null | string {
+export const Resources = {
+  Scripts: require("./resources/scripts"),
+  Styles: require("./resources/styles"),
+  Images: require("./resources/images")
+};
+
+export default class Parser extends EventEmitter {
+  main: string;
+  base: string;
+  config: Object;
+
+  promise: Promise<*>;
+  resolve: Function = () => true;
+  reject: Function = () => false;
+
+  constructor(file: string, options: Object): void {
+    super();
+
+    this.config = {
+      resources: [Resources.Scripts, Resources.Styles, Resources.Images],
+      cwd: process.cwd(),
+      ...options
+    };
+
+    this.main = path.resolve(this.config.cwd, file);
+    this.base = path.parse(this.main).dir;
+
+    this.promise = new Promise((resolve, reject) => {
+      this.resolve = resolve;
+      this.reject = reject;
+    });
+  }
+
+  then(callback: Function): this {
+    this.promise.then(callback);
+    this.search();
+
+    return this;
+  }
+
+  catch(callback: Function): this {
+    this.promise.catch(callback);
+    this.search();
+
+    return this;
+  }
+
+  loadFileContent(file: string): string {
     if (!fs.existsSync(file)) {
       this.emit("error", `File ${file} does not exist`);
-      return null;
+      return "";
     }
 
     return fs.readFileSync(file, { encoding: "utf8" });
-  },
+  }
 
-  getResources(html: string): Array<Object> {
+  parseFileContent(html: string): Array<Object> {
     const $ = cheerio.load(html);
-    const elems = [];
+    const e = [];
 
-    for (const resource of this.opts.resources) {
+    for (const resource of this.config.resources) {
       $(resource.tag).each((index, element) => {
-        const $resource: Object = $(element);
-        const fileSource: string = $resource.attr(resource.attr);
+        const resElem: Object = $(element);
+        const resPath: string = resElem.attr(resource.attr);
 
-        elems.push({
+        e.push({
           type: resource.tag,
-          path: path.resolve(this.base, fileSource)
+          path: path.resolve(this.base, resPath)
         });
       });
     }
 
-    return elems;
-  },
+    return e;
+  }
 
-  prepareResource(type: string, source: string, raw: string): void {
+  prepareResource(type: string, source: string, raw: Object): void {
     fs.readFile(source, "utf8", (error, data) => {
       if (error) {
         this.emit("error", error.message);
@@ -51,11 +97,11 @@ export default {
       this.emit(type, raw, stream);
       this.emit("item", type, raw, stream);
     });
-  },
+  }
 
   search(): Object {
-    const html: string = this.getContent(this.main);
-    const files: Array<Object> = this.getResources(html);
+    const html: string = this.loadFileContent(this.main);
+    const files: Array<Object> = this.parseFileContent(html);
     let count: number = files.length;
 
     this.on("item", () => {
@@ -75,4 +121,4 @@ export default {
 
     return this;
   }
-};
+}

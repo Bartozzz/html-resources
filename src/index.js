@@ -1,8 +1,6 @@
 // @flow
-import path, { extname } from "path";
-import mixin from "merge-descriptors";
-import EventEmitter from "events";
-import HtmlParser from "./parser";
+import { extname } from "path";
+import Parser from "./parser";
 
 export const Resources = {
   Scripts: require("./resources/scripts"),
@@ -25,34 +23,5 @@ export function getResources(file: string, options: Object = {}): Object {
     throw new Error(`You must provide a .html file, not ${extname(file)}`);
   }
 
-  const opts = {
-    resources: [Resources.Scripts, Resources.Styles, Resources.Images],
-    cwd: process.cwd(),
-    ...options
-  };
-
-  const main = path.resolve(opts.cwd, file);
-  const base = path.parse(main).dir;
-  const parser = { file, base, main, opts };
-
-  // Glues all the components together:
-  mixin(parser, HtmlParser, false);
-  mixin(parser, EventEmitter.prototype, false);
-
-  const promise = new Promise((resolve, reject) => {
-    parser.resolve = resolve;
-    parser.reject = reject;
-  });
-
-  parser.then = function(callback) {
-    promise.then(callback);
-    return this;
-  };
-
-  parser.catch = function(callback) {
-    promise.catch(callback);
-    return this;
-  };
-
-  return parser;
+  return new Parser(file, options);
 }
