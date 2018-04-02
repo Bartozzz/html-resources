@@ -1,6 +1,6 @@
 // @flow
 
 export default {
-    tag: "link",
-    attr: "href",
+  tag: "link",
+  attr: "href"
 };

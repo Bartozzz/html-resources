@@ -1,57 +1,27 @@
 // @flow
-
-import path from "path";
-import mixin from "merge-descriptors";
-import EventEmitter from "events";
-import HtmlParser from "./parser";
+import { extname } from "path";
+import Parser from "./parser";
 
 /**
- * Default resources.
+ * Parses `.html` files for custom resources. Finds any resources loaded by an
+ * HTML file for you and emits an event with all the data needed. Supports
+ * Promises.
  *
- * @type    {object}
+ * @param   {string}    file
+ * @param   {Object}    options
+ * @param   {string}    options.cwd
+ * @param   {Array}     options.resources
+ *
+ * @throws  {Error}
+ * @return  {Object}
  */
-export const Resources = {
-    Scripts: require("./resources/scripts"),
-    Styles: require("./resources/styles"),
-    Images: require("./resources/images"),
-};
+function getResources(file: string, options: Object = {}): Object {
+  if (extname(file) !== ".html") {
+    throw new Error(`You must provide a .html file, not ${extname(file)}`);
+  }
 
-/**
- * Glues all components together.
- *
- * @param   {string}    file            HTML to get resources from
- * @param   {object}    opts            Custom options
- * @param   {string}    opts.cwd        Current working directory
- * @param   {array}     opts.resources  Resources to parse the HTML file for
- *
- * @return  {object}
- */
-export function getResources(file: string, opts: Object = {}): Object {
-    if (path.extname(file) !== ".html") {
-        throw new Error(
-            `You must provide an .html file, not ${path.extname(file)}`
-        );
-    }
-
-    if (! opts.resources) {
-        opts.resources = [
-            Resources.Scripts,
-            Resources.Styles,
-            Resources.Images,
-        ];
-    }
-
-    if (! opts.cwd) {
-        opts.cwd = process.cwd();
-    }
-
-    const main = path.resolve(opts.cwd, file);
-    const base = path.parse(main).dir;
-    const parser = {file, base, main, opts};
-
-    mixin(parser, EventEmitter.prototype, false);
-    mixin(parser, HtmlParser, false);
-
-    // $FlowFixMe
-    return parser.search();
+  return new Parser(file, options);
 }
+
+export default getResources;
+export { default as Resources } from "./resources";

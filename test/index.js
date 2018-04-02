@@ -1,26 +1,37 @@
-const {getResources} = require("../dist");
+import path  from "path";
+import chai  from "chai";
+import getResources from "../src/";
 
-const assets = getResources("./resources/index.html", {
-    cwd: __dirname,
-});
+describe("html-resources", function () {
+  const expect = chai.expect;
+  const folder = path.resolve(__dirname, "./resources/index.html");
 
-assets.on("img", (resource) => {
-    console.log("Image:", resource.name);
-});
+  describe("getResources(file, options)", function () {
+    it("should support Event syntax", function (done) {
+      let okay = false;
+      let assets = getResources(folder);
 
-assets.on("link", (resource) => {
-    console.log("Style:", resource.name);
-});
+      assets.on("item", (resource) => {
+        if (!okay) {
+          okay = true;
+          done();
+        }
+      });
 
-assets.on("script", (resource) => {
-    console.log("Script:", resource.base);
-});
+      assets.search();
+    });
 
-assets.on("error", (message) => {
-    console.log("Error", message);
-});
+    it("should support Promise syntax", function (done) {
+      let assets = getResources(folder).then((resources) => {
+        expect(resources.length).to.equal(5);
+        done();
+      });
+    });
 
-assets.on("end", (resources) => {
-    console.log("------------------");
-    console.log(`${resources.length} resources found!`);
+    it("should support await/async syntax", async function () {
+      let resources = await getResources(folder);
+
+      expect(resources.length).to.equal(5);
+    });
+  });
 });
