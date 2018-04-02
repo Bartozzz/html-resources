@@ -1,6 +1,6 @@
 import path  from "path";
 import chai  from "chai";
-import {getResources} from "../src/";
+import getResources from "../src/";
 
 describe("html-resources", function () {
   const expect = chai.expect;

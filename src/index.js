@@ -2,12 +2,6 @@
 import { extname } from "path";
 import Parser from "./parser";
 
-export const Resources = {
-  Scripts: require("./resources/scripts"),
-  Styles: require("./resources/styles"),
-  Images: require("./resources/images")
-};
-
 /**
  * Glues all components together.
  *
@@ -18,10 +12,13 @@ export const Resources = {
  *
  * @return  {object}
  */
-export function getResources(file: string, options: Object = {}): Object {
+function getResources(file: string, options: Object = {}): Object {
   if (extname(file) !== ".html") {
     throw new Error(`You must provide a .html file, not ${extname(file)}`);
   }
 
   return new Parser(file, options);
 }
+
+export default getResources;
+export { default as Resources } from "./resources";

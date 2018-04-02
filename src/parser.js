@@ -4,12 +4,7 @@ import path from "path";
 import mixin from "merge-descriptors";
 import cheerio from "cheerio";
 import EventEmitter from "events";
-
-export const Resources = {
-  Scripts: require("./resources/scripts"),
-  Styles: require("./resources/styles"),
-  Images: require("./resources/images")
-};
+import resources from "./resources";
 
 export default class Parser extends EventEmitter {
   main: string;
@@ -24,7 +19,7 @@ export default class Parser extends EventEmitter {
     super();
 
     this.config = {
-      resources: [Resources.Scripts, Resources.Styles, Resources.Images],
+      resources: Object.values(resources),
       cwd: process.cwd(),
       ...options
     };
