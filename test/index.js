@@ -6,8 +6,8 @@ describe("html-resources", function () {
   const expect = chai.expect;
   const folder = path.resolve(__dirname, "./resources/index.html");
 
-  describe("getResources(file)", function () {
-    it("should emit events", function (done) {
+  describe("getResources(file, options)", function () {
+    it("should support Event syntax", function (done) {
       let okay = false;
       let assets = getResources(folder);
 
@@ -21,22 +21,17 @@ describe("html-resources", function () {
       assets.search();
     });
 
-    it("should be thenable", function (done) {
+    it("should support Promise syntax", function (done) {
       let assets = getResources(folder).then((resources) => {
         expect(resources.length).to.equal(5);
         done();
-      }).search();
+      });
     });
 
-    it("should find resources", function (done) {
-      let assets = getResources(folder);
+    it("should support await/async syntax", async function () {
+      let resources = await getResources(folder);
 
-      assets.on("end", (resources) => {
-        expect(resources.length).to.equal(5);
-        done();
-      });
-
-      assets.search();
+      expect(resources.length).to.equal(5);
     });
   });
 });
