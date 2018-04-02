@@ -5,9 +5,10 @@
 [![Build Status](https://img.shields.io/travis/Bartozzz/html-resources.svg)](https://travis-ci.org/Bartozzz/html-resources/)
 [![npm version](https://img.shields.io/npm/v/html-resources.svg)](https://www.npmjs.com/package/html-resources)
 [![npm downloads](https://img.shields.io/npm/dt/html-resources.svg)](https://www.npmjs.com/package/html-resources)
-  <br>
+<br>
 
-Parse `.html` files for custom resources. `html-resources` finds any resources loaded by a website for you and emits an event with all the data needed.
+`html-resources` is a Node.js module which parses `.html` files and returns resources which are included inside (such as _scripts_, _images_, _stylesheets_, _user-defined_ elements). Supports both _Event-based_ and _Promise-based_ syntax.
+
 </div>
 
 ## Installation
@@ -18,77 +19,73 @@ $ npm install html-resources
 
 ## Usage
 
-`getResources( file, options );`
+`getResources(file, options);`
 
 ```javascript
-import { getResources, Resources } from "html-resources";
+import getResources, {Resources} from "html-resources";
 
-const assets = getResources( "./path/to/file.html", {
-    cwd       : "current/working/directory",
-    resources : [
-        Resources.Scripts,
-        Resources.Styles,
-        Resources.Images
-    ]
-} );
+const parser = getResources("./path/to/file.html", {
+  cwd: process.cwd(),
+  resources: [
+    Resources.Scripts,
+    Resources.Styles,
+    Resources.Images
+  ]
+});
 ```
 
-### Basic example
+### Promise-based syntax example
 
 ```javascript
-import { getResources } from "html-resources";
+getResources("./path/to/file.html")
+  .then(resources => …)
+  .catch(exception => …);
+```
 
-const assets = getResources( "./path/to/file.html", {
-    cwd : __dirname
-} );
+You can also use `await`/`async` syntax:
 
-assets.on( "item", ( type, resource, stream ) => {
-    console.log( `${type} found`, resource );
-} );
+```javascript
+const resources = await getResources("./path/to/file.html")
+```
 
-assets.on( "link", ( resource, stream ) => {
-    console.log( "Stylesheet found", resource );
-} );
+### Event-based syntax example
 
-assets.on( "script", ( resource, stream ) => {
-    console.log( "Script found", resource );
-} );
+```javascript
+const parser = getResources("./path/to/file.html");
 
-assets.on( "img", ( resource, stream ) => {
-    console.log( "Image found", resource );
-} );
+parser.on("item", (type, resource, stream) => …);
+parser.on("img", (resource, stream) => …);
+parser.on("link", (resource, stream) =>  …);
+parser.on("script", (resource, stream) => …);
+// …
 
-assets.on( "error", message => console.log( "Error", message ) );
-assets.on( "end", resources => console.log( `Found ${resources.length} resources` ) );
+parser.on("error", message => …);
+parser.on("end", resources => …);
+parser.start();
 ```
 
 ### Adding new resource definitions
 
-You can specify which resources you want to parse in the `resources` parameter by passing an object with two properties: `tag` and `attr`. By default, it will look for `Resources.Scripts` (`<script src="…"></script>`), `Resources.Styles` (`<link href="…" />`), `Resources.Images` (`<img src="…" />`).
+You can specify which resources you want to parse in the `resources` parameter by passing an object with two properties: `tag` and `attr`. By default, it will look for:
+
+* `Resources.Scripts` (`<script src="…"></script>`);
+* `Resources.Styles` (`<link href="…" />`);
+* `Resources.Images` (`<img src="…" />`);
 
 ```javascript
-import { getResources, Resources } from "html-resources";
+import getResources, {Resources} from "html-resources";
 
-const assets = getResources( "./path/to/file.html", {
-    resources : [
-        // <img />, <link />, <script />
-        ...Resources,
+const parser = getResources("./path/to/file.html", {
+  resources: [
+    // <custom-tag path="path/to/file" />
+    { tag: "custom-tag", attr: "path" },
+    // <shadow-item custom="path/to/file" />
+    { tag: "shadow-item", attr: "custom" }
+  ]
+});
 
-        // <custom-tag path="path/to/file" />
-        { tag : "custom-tag", attr : "path" },
-
-        // <shadow-item custom="path/to/file" />
-        { tag : "shadow-item", attr : "custom" }
-    ]
-} );
-
-assets.on( "custom-tag", ( resource, stream ) => {
-    console.log( resource )
-} );
-
-assets.on( "shadow-item", ( resource, stream ) => {
-    console.log( resource )
-} );
+parser.on("custom-tag", (resource, stream) => …);
+parser.on("shadow-item", (resource, stream) => …);
 ```
 
 ### Saving resources
@@ -96,39 +93,22 @@ assets.on( "shadow-item", ( resource, stream ) => {
 You can use `html-resources` to find, modify and re-save resources in a simple way.
 
 ```javascript
-import { getResources } from "html-resources";
+parser.on("script", (resource, stream) => {
+  console.log("Transforming script", resource.name);
 
-const assets = getResources( "./path/to/file.html", {
-    cwd : __dirname
-} );
+  const dist = path.resolve("path/to/output/", resource.base);
+  const write = fs.createWriteStream(dist, { flags: "w" });
 
-assets.on( "script", ( resource, stream ) => {
-    console.log( "Saving script", resource.name );
+  // You can use browserify, babelify and use other transformations here…
 
-    const dist  = path.resolve( "path/to/output/", resource.base );
-    const write = fs.createWriteStream( dist, { flags : "w" } );
-
-    // You can use browserify, babelify and use other transformations here…
-
-    stream.pipe( write );
-} );
-```
-
-## Resources definitions
-
-You can add your own resources definitions. It's a simple object containing two properties. The example below will emit an event named `custom-tag` for each `<custom-tag path="…"></custom-tag>` (or `<custom-tag path="…" />`) matched.
-
-```json
-{
-    "tag"  : "custom-tag",
-    "attr" : "path"
-}
+  stream.pipe(write);
+});
 ```
 
 ## Options
 
 ```javascript
-const assets = getResources( file [, options] );
+const parser = getResources(file [, options]);
 ```
 
 #### file
@@ -137,8 +117,14 @@ HTML file to parse.
 
 #### options.cwd
 
-Current working directory. All the paths will be resolved to `cwd`. By default, it's set to `process.cwd()` but in most cases you want to set it manually to `__dirname`.
+Current working directory. All the paths will be resolved to `cwd`. By default, it's set to `process.cwd()` but in most cases you want to set it manually to `__dirname` or pass an absolute path to `file` instead.
 
 #### options.resources
 
-An array containing all the resources definitions `html-resources` should look for. By default, it's set to `Resources.Scripts`, `Resources.Styles`, `Resources.Images`.
+An array containing all the resources definitions `html-resources` should look for. By default, it is set to `Resources.Scripts`, `Resources.Styles`, `Resources.Images`.
+
+## Tests
+
+```bash
+$ npm test
+```
