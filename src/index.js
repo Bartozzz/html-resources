@@ -39,6 +39,20 @@ export function getResources(file: string, options: Object = {}): Object {
   mixin(parser, HtmlParser, false);
   mixin(parser, EventEmitter.prototype, false);
 
-  // $FlowFixMe
+  const promise = new Promise((resolve, reject) => {
+    parser.resolve = resolve;
+    parser.reject = reject;
+  });
+
+  parser.then = function(callback) {
+    promise.then(callback);
+    return this;
+  };
+
+  parser.catch = function(callback) {
+    promise.catch(callback);
+    return this;
+  };
+
   return parser;
 }

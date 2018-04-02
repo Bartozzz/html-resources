@@ -59,7 +59,14 @@ export default {
     let count: number = files.length;
 
     this.on("item", () => {
-      if (--count === 0) this.emit("end", files);
+      if (--count === 0) {
+        this.emit("end", files);
+        this.resolve(files);
+      }
+    });
+
+    this.on("error", error => {
+      this.reject(error);
     });
 
     for (let file of files) {
