@@ -8,4 +8,4 @@ exports.default = {
   Scripts: require("./scripts"),
   Styles: require("./styles")
 };
-module.exports = exports["default"];
+module.exports = exports.default;
