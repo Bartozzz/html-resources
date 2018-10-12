@@ -7,4 +7,4 @@ exports.default = {
   tag: "link",
   attr: "href"
 };
-module.exports = exports["default"];
+module.exports = exports.default;

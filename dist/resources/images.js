@@ -7,4 +7,4 @@ exports.default = {
   tag: "img",
   attr: "src"
 };
-module.exports = exports["default"];
+module.exports = exports.default;

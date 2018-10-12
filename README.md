@@ -22,15 +22,11 @@ $ npm install html-resources
 `getResources(file, options);`
 
 ```javascript
-import getResources, {Resources} from "html-resources";
+import getResources, { Resources } from "html-resources";
 
 const parser = getResources("./path/to/file.html", {
   cwd: process.cwd(),
-  resources: [
-    Resources.Scripts,
-    Resources.Styles,
-    Resources.Images
-  ]
+  resources: [Resources.Scripts, Resources.Styles, Resources.Images]
 });
 ```
 

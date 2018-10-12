@@ -329,4 +329,4 @@ var Parser = function (_EventEmitter) {
 }(_events2.default);
 
 exports.default = Parser;
-module.exports = exports["default"];
+module.exports = exports.default;
