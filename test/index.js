@@ -1,37 +1,31 @@
-import path  from "path";
-import chai  from "chai";
+import path from "path";
+import chai from "chai";
 import getResources from "../src/";
 
-describe("html-resources", function () {
+describe("html-resources", () => {
   const expect = chai.expect;
   const folder = path.resolve(__dirname, "./resources/index.html");
 
-  describe("getResources(file, options)", function () {
-    it("should support Event syntax", function (done) {
-      let okay = false;
+  describe("getResources(file, options)", () => {
+    it("should automatically start to parse", done => {
       let assets = getResources(folder);
 
-      assets.on("item", (resource) => {
-        if (!okay) {
-          okay = true;
-          done();
-        }
-      });
-
-      assets.search();
-    });
-
-    it("should support Promise syntax", function (done) {
-      let assets = getResources(folder).then((resources) => {
-        expect(resources.length).to.equal(5);
+      assets.on("end", resources => {
         done();
       });
     });
 
-    it("should support await/async syntax", async function () {
-      let resources = await getResources(folder);
+    it("should wait before parsing", done => {
+      let okay = false;
+      let assets = getResources(folder, {
+        autostart: false
+      });
 
-      expect(resources.length).to.equal(5);
+      assets.on("end", resources => {
+        done();
+      });
+
+      assets.parse();
     });
   });
 });
