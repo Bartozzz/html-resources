@@ -7,7 +7,7 @@
 [![npm downloads](https://img.shields.io/npm/dt/html-resources.svg)](https://www.npmjs.com/package/html-resources)
 <br>
 
-`html-resources` is a Node.js module which parses `.html` files and returns resources which are included inside (such as _scripts_, _images_, _stylesheets_, _user-defined_ elements). Supports both _Event-based_ and _Promise-based_ syntax.
+`html-resources` is a Node.js module which parses `.html` files and returns resources which are included inside (such as _scripts_, _images_, _stylesheets_, _user-defined_ elements).
 
 </div>
 
@@ -30,21 +30,7 @@ const parser = getResources("./path/to/file.html", {
 });
 ```
 
-### Promise-based syntax example
-
-```javascript
-getResources("./path/to/file.html")
-  .then(resources => …)
-  .catch(exception => …);
-```
-
-You can also use `await`/`async` syntax:
-
-```javascript
-const resources = await getResources("./path/to/file.html")
-```
-
-### Event-based syntax example
+### Basic example
 
 ```javascript
 const parser = getResources("./path/to/file.html");
@@ -57,16 +43,16 @@ parser.on("script", (resource, stream) => …);
 
 parser.on("error", message => …);
 parser.on("end", resources => …);
-parser.start();
+parser.parse();
 ```
 
 ### Adding new resource definitions
 
 You can specify which resources you want to parse in the `resources` parameter by passing an object with two properties: `tag` and `attr`. By default, it will look for:
 
-* `Resources.Scripts` (`<script src="…"></script>`);
-* `Resources.Styles` (`<link href="…" />`);
-* `Resources.Images` (`<img src="…" />`);
+- `Resources.Scripts` (`<script src="…"></script>`);
+- `Resources.Styles` (`<link href="…" />`);
+- `Resources.Images` (`<img src="…" />`);
 
 ```javascript
 import getResources, {Resources} from "html-resources";
@@ -118,6 +104,10 @@ Current working directory. All the paths will be resolved to `cwd`. By default, 
 #### options.resources
 
 An array containing all the resources definitions `html-resources` should look for. By default, it is set to `Resources.Scripts`, `Resources.Styles`, `Resources.Images`.
+
+#### options.autostart
+
+Whether to automatically start to parse the HTML file or wait for manual `.parse()` execution.
 
 ## Tests
 
