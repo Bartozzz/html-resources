@@ -1,7 +1,18 @@
 // @flow
 
 export default {
-  Images: require("./images"),
-  Scripts: require("./scripts"),
-  Styles: require("./styles")
+  Images: {
+    tag: "img",
+    attr: "src"
+  },
+
+  Scripts: {
+    tag: "script",
+    attr: "src"
+  },
+
+  Styles: {
+    tag: "link",
+    attr: "href"
+  }
 };
