@@ -15,3 +15,4 @@ node_modules/
 *.sln
 *.log
 *.npm
+flow-typed
